@@ -26,9 +26,6 @@ BALL_START_Y = 540
 # Initial ball velocity
 BALL_VELOCITY = 5
 
-# Play game sounds
-PLAY_SOUNDS = True
-
 # Maximum possible velocity of the ball
 MAX_BALL_VELOCITY = 50
 

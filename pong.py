@@ -23,7 +23,6 @@ try:
         BALL_START_X,
         BALL_START_Y,
         BALL_VELOCITY,
-        PLAY_SOUNDS,
         MAX_BALL_VELOCITY,
         PADDLE_HEIGHT,
         PADDLE_WIDTH,
@@ -44,7 +43,6 @@ except ImportError:
 try:
     import pygame
     import random
-    if PLAY_SOUNDS: from playsound import playsound
 except ImportError:
     if input("Some packages are not installed, would you like to install them? (y/n): ").lower() == "y":
         import subprocess
@@ -201,14 +199,12 @@ while running:
             if not ball.collided:
                 ball.vel_x *= -1
                 ball.collided = True
-                if PLAY_SOUNDS: playsound("assets/sound/bounce.mp3",False)
         else:
             ball.collided = False
 
         # Test for boundary collision
         if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
             ball.vel_y *= -1
-            if PLAY_SOUNDS: playsound("assets/sound/bounce.mp3",False)
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
             ball.disabled = True # Turn the ball into a ghost (does not simulate)
             spawn_ball(ball_counter)
