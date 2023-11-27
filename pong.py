@@ -1,10 +1,32 @@
 # circle = pygame.draw.circle(screen, (colourRGB), (ball_x, ball_y), radius)
 # rect = pygame.draw.rect(screen, (colourRGB), (ball_x, ball_y, width, height)
 
+import os
+# Running the program via the Run button in VS Code etc. sometimes causes problems
+# where this file cannot access other files in its directory.
+# This will set the current working directory to where this Python file is located.
+PATH_TO_FILE = os.path.dirname(os.path.abspath(__file__))
+os.chdir(PATH_TO_FILE)
+
 
 # Import and initialize the pygame library
 import pygame
 import random
+
+# Import custom settings file
+try:
+    from settings import *
+except ImportError:
+    # Create settings file
+    template = open("settings_template.py", 'r')
+    new_settings = open("settings.py", 'w')
+    new_settings.write(template.read()) # Copy template to new file
+    new_settings.close()
+    template.close()
+    # Finally, import the newly created file
+    from settings import *
+
+from utils import *
 
 # Import pygame.locals for easier access to key coordinates
 from pygame.locals import (
@@ -21,41 +43,11 @@ from pygame.locals import (
 # Initialise PyGame
 pygame.init()
 
-# Constants for game
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
-
 # Set clock cycles
 clock = pygame.time.Clock()
-FPS = 60
-
-# Define colours
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 
 # Set up the drawing window
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-
-# Number of balls to create
-NUM_BALLS = 1
-
-# Ball dimensions
-BALL_RADIUS = 16
-
-# Ball start position
-BALL_START_X = 960
-BALL_START_Y = 540
-
-# Ball velocity
-BALL_VELOCITY = 5
-
-PADDLE_HEIGHT = 200
-PADDLE_WIDTH = 30
-PADDLE_VELOCITY = 15
-
 
 class Ball():
     def __init__(self, colour, radius, pos_x, pos_y, vel_x, vel_y):
@@ -83,16 +75,17 @@ class Paddle():
         self.velocity = velocity
         self.update()
         # rect = pygame.draw.rect(screen, (colourRGB), (ball_x, ball_y, width, height)
+
+    def move(self, up, down):
+        if up and self.pos_y > 0:
+            self.pos_y -= self.velocity
+
+        if down and self.pos_y < SCREEN_HEIGHT - self.height:
+            self.pos_y += self.velocity
     
     def update(self):
         #self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, 10, 100))
         self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, self.width, self.height))
-
-def spawn_ball(i):
-    print(f"Created ball at index {i}")
-    balls.append(
-        Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, (BALL_VELOCITY + random.randint(0,i))*(1 if i%2 == 0 else -1), BALL_VELOCITY/5 + random.randint(-20,20))
-    )
 
 # Scoring system
 score = 0
@@ -100,11 +93,19 @@ score = 0
 paddle_a = Paddle(SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 paddle_b = Paddle((SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
+def spawn_ball(i):
+    balls.append(
+        Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, clamp(BALL_VELOCITY + i / 5, 1, MAX_BALL_VELOCITY)*(1 if i%2 == 0 else -1), BALL_VELOCITY/5 + random.randint(-15,15))
+    )
+    print(f"Created ball at count {i} index {len(balls)}")
+
 # Create balls
+ball_counter = 0
 balls = []
 for i in range(NUM_BALLS):
     # Add ball to list
-    spawn_ball(i)
+    spawn_ball(ball_counter)
+    ball_counter += 1
 
 space_key_pressed = False
 # Run until the user asks to quit
@@ -115,6 +116,19 @@ while running:
     clock.tick(FPS)
     screen.fill(BLACK)
 
+    # optimisation
+    if len(balls) > MAX_BALL_STORAGE:
+        if CONTINUE_ON_OVERFLOW: # do we want to keep going?
+            # remove all disabled balls
+            active_balls = []
+            for ball in balls:
+                if not ball.disabled:
+                    active_balls.append(ball)
+            print(f"Cleanup: old={len(balls)} new={len(active_balls)}")
+            balls = active_balls
+        else:
+            running = False
+
     # Game close mechanic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -122,20 +136,16 @@ while running:
 
     # Keypress detection
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and paddle_a.pos_y > 0:
-        paddle_a.pos_y -= paddle_a.velocity
-    if keys[pygame.K_s] and paddle_a.pos_y < 1080 - paddle_a.height:
-        paddle_a.pos_y += paddle_a.velocity
 
-    if keys[pygame.K_UP] and paddle_b.pos_y > 10:
-        paddle_b.pos_y -= paddle_b.velocity
-
-    if keys[pygame.K_DOWN] and paddle_b.pos_y < 1080 - paddle_a.height:
-        paddle_b.pos_y += paddle_b.velocity
+    # Tell the paddles to process the key inputs
+    paddle_a.move(keys[pygame.K_w], keys[pygame.K_s])
+    paddle_b.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
+    
 
     if keys[pygame.K_SPACE]:
         if not space_key_pressed:
-            spawn_ball(len(balls))
+            spawn_ball(ball_counter)
+            ball_counter += 1
             space_key_pressed = True
     else:
         space_key_pressed = False
@@ -158,6 +168,8 @@ while running:
             ball.vel_y *= -1
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
             ball.disabled = True
+            spawn_ball(ball_counter)
+            ball_counter += 1
 
         # Move the ball
         ball.pos_x += ball.vel_x
