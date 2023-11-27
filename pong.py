@@ -40,7 +40,7 @@ BLUE = (0, 0, 255)
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
 # Number of balls to create
-NUM_BALLS = 200
+NUM_BALLS = 1
 
 # Ball dimensions
 BALL_RADIUS = 16
@@ -53,7 +53,7 @@ BALL_START_Y = 540
 BALL_VELOCITY = 5
 
 PADDLE_HEIGHT = 200
-PADDLE_WIDTH = 20
+PADDLE_WIDTH = 30
 PADDLE_VELOCITY = 15
 
 
@@ -97,9 +97,8 @@ def spawn_ball(i):
 # Scoring system
 score = 0
 
-
-paddle_a = Paddle(SCREEN_WIDTH / 30, SCREEN_HEIGHT / 2, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
-paddle_b = Paddle((SCREEN_WIDTH / 30) *29, SCREEN_HEIGHT / 2, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_a = Paddle(SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_b = Paddle((SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
 # Create balls
 balls = []
