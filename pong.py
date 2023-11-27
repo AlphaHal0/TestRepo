@@ -49,7 +49,7 @@ BALL_START_X = 960
 BALL_START_Y = 540
 
 # Ball velocity
-BALL_VELOCITY = 5
+BALL_VELOCITY = 8
 BALL_VEL_X = BALL_VELOCITY
 BALL_VEL_Y = BALL_VELOCITY
 
@@ -69,8 +69,9 @@ class Ball():
         print("Created ball")
     
     def update(self):
-        print(f"{self.pos_x}, {self.pos_y}")
-        self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
+        #print(f"{self.pos_x}, {self.pos_y}")
+        #self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
+        self.rect.move(self.pos_x,self.pos_y)
 
 class Paddle(pygame.Rect):
     def __init__(self, id, pos_x, pos_y, height, width, velocity):
@@ -84,35 +85,33 @@ class Paddle(pygame.Rect):
         self.rect = pygame.draw.rect(screen, WHITE, (pos_x, pos_y, 10, 100))
     
     def update(self):
-        print(f"{self.pos_x}, {self.pos_y}")
-        self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, 10, 100))
-
-
+        #self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, 10, 100))
+        self.rect.move(self.pos_x,self.pos_y)
 
 # paddle_b_x = (SCREEN_WIDTH / 30) * 29
 # paddle_b_y = SCREEN_HEIGHT / 2
 
-
-
 # Scoring system
 score = 0
-
-
-
 paddle_a = Paddle(1, SCREEN_WIDTH / 30, SCREEN_HEIGHT / 2, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 paddle_b = Paddle(2, (SCREEN_WIDTH / 30) *29, SCREEN_HEIGHT / 2, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
-ball = Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, BALL_VEL_X, BALL_VEL_Y)
+#ball = Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, BALL_VEL_X, BALL_VEL_Y)
 
-
+# Create balls
+balls = []
+for i in range(NUM_BALLS):
+    # Add ball to list
+    balls.append(
+        Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, i+5, 1 if i%2 == 0 else -1))
 
 # Run until the user asks to quit
 pygame.display.set_caption("Pong Test Game")
 
 running = True
+screen.fill(BLACK)
 while running:
     clock.tick(FPS)
-    screen.fill(BLACK)
 
     # Game close mechanic
     for event in pygame.event.get():
@@ -135,42 +134,24 @@ while running:
     # Move ball
 
     # Ball border detection
-    #for ball in balls:
-    ball.pos_x += ball.vel_x
-    ball.pos_y += ball.vel_y
-    if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
-        ball.vel_y *= -1
-    if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
-        ball.vel_x *= -1
+    for ball in balls:
+        ball.pos_x += ball.vel_x
+        ball.pos_y += ball.vel_y
+        if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
+            ball.vel_y *= -1
+        if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
+            ball.vel_x *= -1
 
-    # Paddle-ball collision detection
-    if paddle_a.pos_y == ball.pos_y and paddle_a.pos_x == ball.pos_x:
-        ball.vel_y *= -1
+        # Paddle-ball collision detection
+        if paddle_a.pos_y == ball.pos_y and paddle_a.pos_x == ball.pos_x:
+            ball.vel_y *= -1
 
-    # Update positions
-    ball.update()  
+        # Update positions
+        ball.update()
     paddle_a.update() 
     paddle_b.update()
-
 
     # Update the display
     pygame.display.update()
 
-
-
 pygame.quit()
-
-# Create balls
-# balls = []
-# for i in range(NUM_BALLS):
-#     # Add ball to list
-#     balls.append(
-#         Ball(
-#             WHITE,
-#             BALL_RADIUS,
-#             BALL_START_X,
-#             BALL_START_Y,
-#             i+5,
-#             1 if i%2 == 0 else -1 # this looks stupid, but it's just me messing around and will be removed
-#         )
-#     )
