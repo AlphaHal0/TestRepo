@@ -18,13 +18,17 @@ try:
     from settings import *
 except ImportError:
     # Create settings file
-    template = open("settings_template.py", 'r')
-    new_settings = open("settings.py", 'w')
+    template = open("settings_template.py", 'r') # Open the template
+    new_settings = open("settings.py", 'w') # Create the new settings file
     new_settings.write(template.read()) # Copy template to new file
     new_settings.close()
     template.close()
     # Finally, import the newly created file
     from settings import *
+
+# Fail-safe in case the number of balls exceeds the cleanup value
+if NUM_BALLS > MAX_BALL_STORAGE:
+    raise ValueError("Ball count cannot be greater than the cleanup threshold")
 
 from utils import *
 
@@ -61,8 +65,7 @@ class Ball():
         self.update()
     
     def update(self):
-        #print(f"{self.pos_x}, {self.pos_y}")
-        #self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
+        # Re-draw the updated circle
         self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
 
 class Paddle():
@@ -74,7 +77,6 @@ class Paddle():
         self.width = width
         self.velocity = velocity
         self.update()
-        # rect = pygame.draw.rect(screen, (colourRGB), (ball_x, ball_y, width, height)
 
     def move(self, up, down):
         if up and self.pos_y > 0:
@@ -84,12 +86,12 @@ class Paddle():
             self.pos_y += self.velocity
     
     def update(self):
-        #self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, 10, 100))
         self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, self.width, self.height))
 
 # Scoring system
 score = 0
 
+# Define paddles
 paddle_a = Paddle(SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 paddle_b = Paddle((SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
@@ -116,16 +118,19 @@ while running:
     clock.tick(FPS)
     screen.fill(BLACK)
 
-    # optimisation
+    # Optimize the ball array by removing ghost (disabled) balls
     if len(balls) > MAX_BALL_STORAGE:
         if CONTINUE_ON_OVERFLOW: # do we want to keep going?
             # remove all disabled balls
-            active_balls = []
+            active_balls = [] # Create temporary array to store active balls
             for ball in balls:
                 if not ball.disabled:
-                    active_balls.append(ball)
+                    active_balls.append(ball) # Add the active balls into a new array
             print(f"Cleanup: old={len(balls)} new={len(active_balls)}")
-            balls = active_balls
+            balls = active_balls # Add only active balls into new array
+            # Fail-safe in case the number of active balls exceeds the cleanup value
+            if len(balls) > MAX_BALL_STORAGE:
+                raise RuntimeError("Active ball count cannot be greater than the cleanup threshold")
         else:
             running = False
 
@@ -167,7 +172,7 @@ while running:
         if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
             ball.vel_y *= -1
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
-            ball.disabled = True
+            ball.disabled = True # Turn the ball into a ghost (does not simulate)
             spawn_ball(ball_counter)
             ball_counter += 1
 
