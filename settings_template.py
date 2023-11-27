@@ -7,6 +7,7 @@
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 FPS = 60
+FONT_PATH = "assets/font/default.ttf"
 
 # Number of balls to create
 NUM_BALLS = 1

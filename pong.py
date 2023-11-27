@@ -1,55 +1,37 @@
-# circle = pygame.draw.circle(screen, (colourRGB), (ball_x, ball_y), radius)
-# rect = pygame.draw.rect(screen, (colourRGB), (ball_x, ball_y, width, height)
-
 import os
-# Running the program via the Run button in VS Code etc. sometimes causes problems
-# where this file cannot access other files in its directory.
-# This will set the current working directory to where this Python file is located.
+
+try:
+    import pygame
+    import pygame.freetype
+    import random
+
+except ImportError:
+    if (input("Some packages are not installed, would you like to install them? (y/n): ").lower()== "y"):
+        import subprocess
+
+        # Install dependencies
+        subprocess.run(["pip", "install", "-r", "requirements.txt"])
+    print("Done, please run the Python script again")
+    quit()
+
+# This will set the current working directory to where this Python file is located to prevent issues.
 PATH_TO_FILE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(PATH_TO_FILE)
 
-# Local Imports
-
 # Import custom settings file
 try:
-    from settings import (
-        SCREEN_HEIGHT,
-        SCREEN_WIDTH,
-        FPS,
-        NUM_BALLS,
-        MAX_BALL_STORAGE,
-        CONTINUE_ON_OVERFLOW,
-        BALL_RADIUS,
-        BALL_START_X,
-        BALL_START_Y,
-        BALL_VELOCITY,
-        MAX_BALL_VELOCITY,
-        PADDLE_HEIGHT,
-        PADDLE_WIDTH,
-        PADDLE_VELOCITY,
-    )
+    from settings import *
 except ImportError:
-    # Create settings file
+    # Create settings file on error
     print("Creating new settings file from default\nPlease run the Python script again")
-    template = open("settings_template.py", 'r') # Open the template
-    new_settings = open("settings.py", 'w') # Create the new settings file
-    new_settings.write(template.read()) # Copy template to new file
+
+    template = open("settings_template.py", "r")  # Open the template
+    new_settings = open("settings.py", "w")  # Create the new settings file
+    new_settings.write(template.read())  # Copy template to new file
     new_settings.close()
     template.close()
-    # Finally, import the newly created file
     quit()
 
-# Site Imports
-try:
-    import pygame
-    import random
-except ImportError:
-    if input("Some packages are not installed, would you like to install them? (y/n): ").lower() == "y":
-        import subprocess
-        # Install dependencies
-        subprocess.run(["pip","install","-r","requirements.txt"])
-    print("Done, please run the Python script again")
-    quit()
 
 # Fail-safe in case the number of balls exceeds the cleanup value
 if NUM_BALLS > MAX_BALL_STORAGE:
@@ -85,7 +67,7 @@ clock = pygame.time.Clock()
 # Set up the drawing window
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-class Ball():
+class Ball:
     def __init__(self, colour, radius, pos_x, pos_y, vel_x, vel_y):
         self.radius = radius
         self.colour = colour
@@ -96,12 +78,13 @@ class Ball():
         self.collided = False
         self.disabled = False
         self.update()
-    
+
     def update(self):
         # Re-draw the updated circle
         self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
 
-class Paddle():
+
+class Paddle:
     def __init__(self, colour, pos_x, pos_y, height, width, velocity):
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -118,21 +101,30 @@ class Paddle():
 
         if down and self.pos_y < SCREEN_HEIGHT - self.height:
             self.pos_y += self.velocity
-    
+
     def update(self):
         self.rect = pygame.draw.rect(screen, self.colour, (self.pos_x, self.pos_y, self.width, self.height))
 
-# Scoring system
-score = 0
-
 # Define paddles
-paddle_a = Paddle(WHITE, SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
-paddle_b = Paddle(WHITE, (SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_a = Paddle(
+    WHITE,
+    SCREEN_WIDTH / 30,
+    (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2),
+    PADDLE_HEIGHT,
+    PADDLE_WIDTH,
+    PADDLE_VELOCITY,
+)
+paddle_b = Paddle(
+    WHITE,
+    (SCREEN_WIDTH / 30) * 29,
+    (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2),
+    PADDLE_HEIGHT,
+    PADDLE_WIDTH,
+    PADDLE_VELOCITY,
+)
 
-def spawn_ball(i):
-    balls.append(
-        Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, clamp(BALL_VELOCITY + i / 5, 1, MAX_BALL_VELOCITY)*(1 if i%2 == 0 else -1), BALL_VELOCITY/5 + random.randint(-15,15))
-    )
+def spawn_ball(i,):  # If random velocity wanted:  clamp(BALL_VELOCITY + i / 5, 1, MAX_BALL_VELOCITY)*(1 if i%2 == 0 else -1), BALL_VELOCITY/5 + random.randint(-15,15)
+    balls.append(Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, BALL_VELOCITY, BALL_VELOCITY))
     print(f"Created ball at count {i} index {len(balls)}")
 
 # Create balls
@@ -144,24 +136,75 @@ for i in range(NUM_BALLS):
     ball_counter += 1
 
 space_key_pressed = False
+
 # Run until the user asks to quit
 pygame.display.set_caption("Pong Test Game")
 pygame.display.update()
+
+# Scoring system
+score_a = 0
+score_b = 0
+
+# Font Details
+font_path = FONT_PATH
+font_size = 60
+
+# Audio Setup
+wall_bounce_sound = './assets/sound/bounce.mp3'
+paddle_bounce_sound = './assets/sound/paddle_bounce.mp3'
+background_music_sound = './assets/sound/titanic-flute-fail.mp3'
+
+def play_wall_bounce():
+    pygame.mixer.Sound.load(wall_bounce_sound)
+    pygame.mixer.Sound.play()
+
+def play_paddle_bounce():
+    pygame.mixer.Sound.load(paddle_bounce_sound)
+    pygame.mixer.Sound.play()
+
+def play_background_music():
+    pygame.mixer.Sound.load(background_music_sound)
+    pygame.mixer.Sound.play()
+
+screen.fill(BLACK)
+audio_popup_font = pygame.font.Font(font_path, font_size)
+audio_popup = audio_popup_font.render(f"Do you want to play backing audio? [y/n]", True, WHITE)
+screen.blit(audio_popup, dest=(SCREEN_WIDTH / 2, 0))
+pygame.display.update()
+audio_choice = pygame.key.get_pressed()
+print(audio_choice)
+
+pygame.event.clear()
+while True:
+    audio_choice = event = pygame.event.wait()
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_y:
+            play_background_music()
+        break
+
+
 running = True
+
 while running:
     clock.tick(FPS)
     screen.fill(BLACK)
 
+    # Font Rendering
+    font = pygame.font.Font(font_path, font_size)
+    text_surface = font.render(f"{score_a} | {score_b}", True, WHITE)
+    screen.blit(text_surface, dest=(SCREEN_WIDTH / 2, 0))
+
+
     # Optimize the ball array by removing ghost (disabled) balls
     if len(balls) > MAX_BALL_STORAGE:
-        if CONTINUE_ON_OVERFLOW: # do we want to keep going?
+        if CONTINUE_ON_OVERFLOW:  # do we want to keep going?
             # remove all disabled balls
-            active_balls = [] # Create temporary array to store active balls
+            active_balls = []  # Create temporary array to store active balls
             for ball in balls:
                 if not ball.disabled:
-                    active_balls.append(ball) # Add the active balls into a new array
+                    active_balls.append(ball)  # Add the active balls into a new array
             print(f"Cleanup: old={len(balls)} new={len(active_balls)}")
-            balls = active_balls # Add only active balls into new array
+            balls = active_balls  # Add only active balls into new array
             # Fail-safe in case the number of active balls exceeds the cleanup value
             if len(balls) > MAX_BALL_STORAGE:
                 raise RuntimeError("Active ball count cannot be greater than the cleanup threshold")
@@ -179,7 +222,6 @@ while running:
     # Tell the paddles to process the key inputs
     paddle_a.move(keys[pygame.K_w], keys[pygame.K_s])
     paddle_b.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
-    
 
     if keys[pygame.K_SPACE]:
         if not space_key_pressed:
@@ -195,20 +237,29 @@ while running:
             continue
 
         # Paddle-ball collision detection
-        if ball.rect.collidelist([paddle_a,paddle_b]) != -1:
+        if ball.rect.collidelist([paddle_a, paddle_b]) != -1:
             if not ball.collided:
                 ball.vel_x *= -1
                 ball.collided = True
+                play_paddle_bounce()
         else:
             ball.collided = False
 
         # Test for boundary collision
         if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
             ball.vel_y *= -1
+            play_wall_bounce()
+
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
-            ball.disabled = True # Turn the ball into a ghost (does not simulate)
+            if ball.pos_x >= SCREEN_WIDTH - ball.radius: # Team B
+                score_a += 1
+            if ball.pos_x < ball.radius: # Team A
+                score_b += 1
+
+            ball.disabled = True  # Turn the ball into a ghost (does not simulate)
             spawn_ball(ball_counter)
             ball_counter += 1
+            print(f"SCORES: {score_a} : {score_b}")
 
         # Move the ball
         ball.pos_x += ball.vel_x
@@ -216,7 +267,7 @@ while running:
 
         # Update positions
         ball.update()
-    paddle_a.update() 
+    paddle_a.update()
     paddle_b.update()
 
     # Update the display
