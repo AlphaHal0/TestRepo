@@ -9,9 +9,23 @@ PATH_TO_FILE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(PATH_TO_FILE)
 
 
-# Import and initialize the pygame library
-import pygame
-import random
+# Site Imports
+try:
+    import pygame
+    import random
+    from playsound import playsound
+except ImportError:
+    if input("Some packages are not installed, would you like to install them? (y/n): ").lower() == "y":
+        import subprocess
+        # Install dependencies
+        subprocess.run(["pip","install","-r","requirements.txt"])
+        import pygame
+        import random
+        from playsound import playsound
+    else:
+        quit()
+
+# Local Imports
 
 # Import custom settings file
 try:
@@ -57,6 +71,7 @@ class Ball():
     def __init__(self, colour, radius, pos_x, pos_y, vel_x, vel_y):
         self.radius = radius
         self.colour = colour
+        self.color = colour
         self.pos_x, self.pos_y = pos_x, pos_y
         self.vel_x = vel_x
         self.vel_y = vel_y
@@ -69,10 +84,11 @@ class Ball():
         self.rect = pygame.draw.circle(screen, self.colour, (self.pos_x, self.pos_y), self.radius)
 
 class Paddle():
-    def __init__(self, pos_x, pos_y, height, width, velocity):
+    def __init__(self, colour, pos_x, pos_y, height, width, velocity):
         self.pos_x = pos_x
         self.pos_y = pos_y
-        self.colour = WHITE
+        self.colour = colour
+        self.color = colour
         self.height = height
         self.width = width
         self.velocity = velocity
@@ -86,14 +102,14 @@ class Paddle():
             self.pos_y += self.velocity
     
     def update(self):
-        self.rect = pygame.draw.rect(screen, WHITE, (self.pos_x, self.pos_y, self.width, self.height))
+        self.rect = pygame.draw.rect(screen, self.colour, (self.pos_x, self.pos_y, self.width, self.height))
 
 # Scoring system
 score = 0
 
 # Define paddles
-paddle_a = Paddle(SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
-paddle_b = Paddle((SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_a = Paddle(RED, SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_b = Paddle(BLUE, (SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
 def spawn_ball(i):
     balls.append(
@@ -165,12 +181,14 @@ while running:
             if not ball.collided:
                 ball.vel_x *= -1
                 ball.collided = True
+                playsound("assets/sound/bounce.mp3",False)
         else:
             ball.collided = False
-        
+
         # Test for boundary collision
         if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
             ball.vel_y *= -1
+            playsound("assets/sound/bounce.mp3",False)
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
             ball.disabled = True # Turn the ball into a ghost (does not simulate)
             spawn_ball(ball_counter)
