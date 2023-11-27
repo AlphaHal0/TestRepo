@@ -8,37 +8,50 @@ import os
 PATH_TO_FILE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(PATH_TO_FILE)
 
-
-# Site Imports
-try:
-    import pygame
-    import random
-    from playsound import playsound
-except ImportError:
-    if input("Some packages are not installed, would you like to install them? (y/n): ").lower() == "y":
-        import subprocess
-        # Install dependencies
-        subprocess.run(["pip","install","-r","requirements.txt"])
-        import pygame
-        import random
-        from playsound import playsound
-    else:
-        quit()
-
 # Local Imports
 
 # Import custom settings file
 try:
-    from settings import *
+    from settings import (
+        SCREEN_HEIGHT,
+        SCREEN_WIDTH,
+        FPS,
+        NUM_BALLS,
+        MAX_BALL_STORAGE,
+        CONTINUE_ON_OVERFLOW,
+        BALL_RADIUS,
+        BALL_START_X,
+        BALL_START_Y,
+        BALL_VELOCITY,
+        PLAY_SOUNDS,
+        MAX_BALL_VELOCITY,
+        PADDLE_HEIGHT,
+        PADDLE_WIDTH,
+        PADDLE_VELOCITY,
+    )
 except ImportError:
     # Create settings file
+    print("Creating new settings file from default\nPlease run the Python script again")
     template = open("settings_template.py", 'r') # Open the template
     new_settings = open("settings.py", 'w') # Create the new settings file
     new_settings.write(template.read()) # Copy template to new file
     new_settings.close()
     template.close()
     # Finally, import the newly created file
-    from settings import *
+    quit()
+
+# Site Imports
+try:
+    import pygame
+    import random
+    if PLAY_SOUNDS: from playsound import playsound
+except ImportError:
+    if input("Some packages are not installed, would you like to install them? (y/n): ").lower() == "y":
+        import subprocess
+        # Install dependencies
+        subprocess.run(["pip","install","-r","requirements.txt"])
+    print("Done, please run the Python script again")
+    quit()
 
 # Fail-safe in case the number of balls exceeds the cleanup value
 if NUM_BALLS > MAX_BALL_STORAGE:
@@ -57,6 +70,13 @@ from pygame.locals import (
     KEYDOWN,
     QUIT,
 )
+
+# Define colours
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
 # Initialise PyGame
 pygame.init()
@@ -108,8 +128,8 @@ class Paddle():
 score = 0
 
 # Define paddles
-paddle_a = Paddle(RED, SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
-paddle_b = Paddle(BLUE, (SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_a = Paddle(WHITE, SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
+paddle_b = Paddle(WHITE, (SCREEN_WIDTH / 30) *29, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 
 def spawn_ball(i):
     balls.append(
@@ -181,14 +201,14 @@ while running:
             if not ball.collided:
                 ball.vel_x *= -1
                 ball.collided = True
-                playsound("assets/sound/bounce.mp3",False)
+                if PLAY_SOUNDS: playsound("assets/sound/bounce.mp3",False)
         else:
             ball.collided = False
 
         # Test for boundary collision
         if ball.pos_y >= SCREEN_HEIGHT - ball.radius or ball.pos_y < ball.radius:
             ball.vel_y *= -1
-            playsound("assets/sound/bounce.mp3",False)
+            if PLAY_SOUNDS: playsound("assets/sound/bounce.mp3",False)
         if ball.pos_x >= SCREEN_WIDTH - ball.radius or ball.pos_x < ball.radius:
             ball.disabled = True # Turn the ball into a ghost (does not simulate)
             spawn_ball(ball_counter)
