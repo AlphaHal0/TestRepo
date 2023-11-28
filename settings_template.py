@@ -3,6 +3,9 @@
 # ------------------------------------------------------------------------- #
 # Constants for game
 
+# Settings file version
+VERSION = 1
+
 # Display settings
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -13,9 +16,9 @@ FONT_PATH = "assets/font/default.ttf"
 NUM_BALLS = 1
 
 # When to remove disabled balls in the array
-MAX_BALL_STORAGE = 5
+MAX_BALL_STORAGE = 20
 # Whether to continue (True) or end (False) the game once above value is met
-CONTINUE_ON_OVERFLOW = True
+CONTINUE_ON_OVERFLOW = False
 
 # Ball dimensions
 BALL_RADIUS = 8
