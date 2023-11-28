@@ -4,6 +4,7 @@ try:
     import pygame
     import pygame.freetype
     import random
+    import sys
 
 except ImportError:
     if (input("Some packages are not installed, would you like to install them? (y/n): ").lower()== "y"):
@@ -57,6 +58,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+
 
 # Initialise PyGame
 pygame.init()
@@ -147,47 +149,82 @@ score_b = 0
 
 # Font Details
 font_path = FONT_PATH
-font_size = 60
+font_size = 60  
 
 # Audio Setup
+
+seed = random.choice(list(open('seeds.txt')))
+random.seed(seed)
+
 wall_bounce_sound = './assets/sound/bounce.mp3'
 paddle_bounce_sound = './assets/sound/paddle_bounce.mp3'
-background_music_sound = './assets/sound/titanic-flute-fail.mp3'
 
+
+song_list = ['./assets/sound/background_audio/deutschlandlied_kazoo.mp3',
+                          './assets/sound/background_audio/erika_ear_damage.mp3',
+                          './assets/sound/background_audio/soviet_kazoo.mp3',
+                          './assets/sound/background_audio/titanic_flute.mp3']
+
+previous_song = None
+def shuffle_music():
+    global previous_song
+    new_song = random.choice(song_list)
+    while new_song == previous_song:
+        new_song = random.choice(song_list)
+    previous_song = new_song
+    return new_song
+
+# Function to play wall bounce sound
 def play_wall_bounce():
-    pygame.mixer.Sound.load(wall_bounce_sound)
-    pygame.mixer.Sound.play()
+    wall_bounce = pygame.mixer.Sound(wall_bounce_sound)
+    wall_bounce.play()
 
+# Function to play paddle bounce sound
 def play_paddle_bounce():
-    pygame.mixer.Sound.load(paddle_bounce_sound)
-    pygame.mixer.Sound.play()
+    paddle_bounce = pygame.mixer.Sound(paddle_bounce_sound)
+    paddle_bounce.play()
 
+MUSIC_END = pygame.USEREVENT + 1
+pygame.mixer.music.set_endevent(MUSIC_END)
+
+# Function to play background music
 def play_background_music():
-    pygame.mixer.Sound.load(background_music_sound)
-    pygame.mixer.Sound.play()
+    pygame.mixer.music.load(shuffle_music())
+    pygame.mixer.music.play()
+
+
 
 screen.fill(BLACK)
-audio_popup_font = pygame.font.Font(font_path, font_size)
-audio_popup = audio_popup_font.render(f"Do you want to play backing audio? [y/n]", True, WHITE)
-screen.blit(audio_popup, dest=(SCREEN_WIDTH / 2, 0))
+audio_popup_font = pygame.font.Font(None, 36)
+audio_popup = audio_popup_font.render("Do you want to play backing audio? [y/n]", True, WHITE)
+screen.blit(audio_popup, dest=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2 - 50))
 pygame.display.update()
-audio_choice = pygame.key.get_pressed()
-print(audio_choice)
 
 pygame.event.clear()
-while True:
-    audio_choice = event = pygame.event.wait()
-    if event.type == pygame.KEYUP:
-        if event.key == pygame.K_y:
-            play_background_music()
-        break
+i = 0
+while i < 1:
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_y:
+                play_background_music()
+                i += 1
+            elif event.key == pygame.K_n:
+                i += 1
+            else:
+                pass
 
 
 running = True
-
 while running:
     clock.tick(FPS)
     screen.fill(BLACK)
+
+    # Game close mechanic
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == MUSIC_END:
+            play_background_music()
 
     # Font Rendering
     font = pygame.font.Font(font_path, font_size)
@@ -211,10 +248,6 @@ while running:
         else:
             running = False
 
-    # Game close mechanic
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
 
     # Keypress detection
     keys = pygame.key.get_pressed()

@@ -13,7 +13,7 @@ FONT_PATH = "assets/font/default.ttf"
 NUM_BALLS = 1
 
 # When to remove disabled balls in the array
-MAX_BALL_STORAGE = 1
+MAX_BALL_STORAGE = 5
 # Whether to continue (True) or end (False) the game once above value is met
 CONTINUE_ON_OVERFLOW = True
 
@@ -25,7 +25,7 @@ BALL_START_X = 960
 BALL_START_Y = 540
 
 # Initial ball velocity
-BALL_VELOCITY = 5
+BALL_VELOCITY = 10
 
 # Maximum possible velocity of the ball
 MAX_BALL_VELOCITY = 50
