@@ -199,8 +199,6 @@ def play_background_music():
     pygame.mixer.music.load(shuffle_music())
     pygame.mixer.music.play()
 
-
-
 screen.fill(BLACK)
 audio_popup_font = pygame.font.Font(None, 36)
 audio_popup = audio_popup_font.render("Do you want to play backing audio? [y/n]", True, WHITE)
@@ -220,6 +218,7 @@ while i < 1:
             else:
                 pass
 
+# Main game loop
 
 running = True
 while running:
