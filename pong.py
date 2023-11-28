@@ -1,5 +1,7 @@
 import os
 
+SETTINGS_VERSION = 1
+
 try:
     import pygame
     import pygame.freetype
@@ -22,7 +24,9 @@ os.chdir(PATH_TO_FILE)
 # Import custom settings file
 try:
     from settings import *
-except ImportError:
+    if VERSION < SETTINGS_VERSION:
+        raise ImportError
+except (ImportError, NameError):
     # Create settings file on error
     print("Creating new settings file from default\nPlease run the Python script again")
 

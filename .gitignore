@@ -163,3 +163,4 @@ cython_debug/
 
 # Game configuration
 settings.py
+scores.txt
