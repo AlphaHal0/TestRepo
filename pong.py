@@ -231,7 +231,7 @@ else:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_y:
-                    play_background_music()
+                    play_background_music(shuffle_music())
                     i += 1
                 elif event.key == pygame.K_n:
                     i += 1
