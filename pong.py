@@ -201,7 +201,7 @@ def play_background_music():
 screen.fill(BLACK)
 audio_popup_font = pygame.font.Font(None, 36)
 audio_popup = audio_popup_font.render("Do you want to play backing audio? [y/n]", True, WHITE)
-screen.blit(audio_popup, dest=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2 - 50))
+screen.blit(audio_popup, dest=(SCREEN_WIDTH/2-audio_popup.get_width()/2, SCREEN_HEIGHT // 2 - 50))
 pygame.display.update()
 
 pygame.event.clear()
@@ -233,7 +233,7 @@ while running:
     # Font Rendering
     font = pygame.font.Font(font_path, font_size)
     text_surface = font.render(f"{score_a} | {score_b}", True, WHITE)
-    screen.blit(text_surface, dest=(SCREEN_WIDTH / 2, 0))
+    screen.blit(text_surface, dest=(SCREEN_WIDTH/2-text_surface.get_width()/2, 0))
 
 
     # Optimize the ball array by removing ghost (disabled) balls
