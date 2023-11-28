@@ -36,8 +36,4 @@ MAX_BALL_VELOCITY = 50
 # Paddle options
 PADDLE_HEIGHT = 150
 PADDLE_WIDTH = 10
-PADDLE_VELOCITY = 15
-
-# Audio settings
-MUSIC_VOLUME = 1 # value from 0 to 1
-DEFAULT_CHOICE = None # set to True or False to automatically choose music option
+PADDLE_VELOCITY = 20
