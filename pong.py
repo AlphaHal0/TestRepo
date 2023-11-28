@@ -169,14 +169,17 @@ song_list = ['./assets/sound/background_audio/deutschlandlied_kazoo.mp3',
                           './assets/sound/background_audio/soviet_kazoo.mp3',
                           './assets/sound/background_audio/titanic_flute.mp3']
 
+current_song_index = 0
 previous_song = None
 def shuffle_music():
-    global previous_song
-    new_song = random.choice(song_list)
-    while new_song == previous_song:
-        new_song = random.choice(song_list)
-    previous_song = new_song
-    return new_song
+    global current_song_index, previous_song
+    while True:
+        new_song_index = random.randint(0, len(song_list) - 1)
+        if new_song_index != current_song_index:
+            current_song_index = new_song_index
+            break
+    previous_song = song_list[current_song_index]
+    return previous_song
 
 # Function to play wall bounce sound
 def play_wall_bounce():
@@ -229,6 +232,17 @@ while running:
             running = False
         elif event.type == MUSIC_END:
             play_background_music()
+
+        # Allow the user to navigate songs by using the ", and . keys (symbolised by the < and > for forwards and backwards)"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_COMMA:  # Previous song
+                current_song_index = (current_song_index - 1) % len(song_list)
+                pygame.mixer.music.load(song_list[current_song_index])
+                pygame.mixer.music.play()
+            elif event.key == pygame.K_PERIOD:  # Next song
+                current_song_index = (current_song_index + 1) % len(song_list)
+                pygame.mixer.music.load(song_list[current_song_index])
+                pygame.mixer.music.play()
 
     # Font Rendering
     font = pygame.font.Font(font_path, font_size)
