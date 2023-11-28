@@ -4,7 +4,7 @@
 # Constants for game
 
 # Settings file version
-VERSION = 1
+VERSION = 3
 
 # Display settings
 SCREEN_WIDTH = 1920
