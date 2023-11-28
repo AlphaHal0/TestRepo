@@ -1,4 +1,4 @@
-SETTINGS_VERSION = 5
+SETTINGS_VERSION = 6
 # Check and install required packages if not installed
 try:
     # Import necessary modules
@@ -107,12 +107,19 @@ paddle_a = Paddle(
     (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2),
     PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
 )
-paddle_b = Paddle(
-    WHITE,
-    (SCREEN_WIDTH / 30) * 29,
-    (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), 
-    PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
-)
+if PRACTICE_MODE:
+    paddle_b = Paddle(
+    GREY,
+    SCREEN_WIDTH - PADDLE_WIDTH,
+    0, SCREEN_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
+    )
+else:
+    paddle_b = Paddle(
+        WHITE,
+        (SCREEN_WIDTH / 30) * 29,
+        (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), 
+        PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
+    )
 
 # Define function to spawn a ball
 def spawn_ball(i):
@@ -283,7 +290,9 @@ while running:
 
     # Tell the paddles to process the key inputs
     paddle_a.move(keys[pygame.K_w], keys[pygame.K_s])
-    paddle_b.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
+
+    if not PRACTICE_MODE:
+        paddle_b.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
 
     # Change music volume
     if keys[pygame.K_EQUALS] and MUSIC_VOLUME < 1:

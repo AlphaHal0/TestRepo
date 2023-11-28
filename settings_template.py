@@ -4,7 +4,7 @@
 # Constants for game
 
 # Settings file version
-VERSION = 5
+VERSION = 6
 
 # Display settings
 SCREEN_WIDTH = 1920
@@ -38,6 +38,9 @@ MAX_BALL_VELOCITY = 20
 PADDLE_HEIGHT = 150
 PADDLE_WIDTH = 10
 PADDLE_VELOCITY = 20
+
+# Only use one paddle
+PRACTICE_MODE = False
 
 # Audio settings
 MUSIC_VOLUME = 0.8 # value from 0.0 to 1.0
