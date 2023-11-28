@@ -4,7 +4,7 @@
 # Constants for game
 
 # Settings file version
-VERSION = 4
+VERSION = 5
 
 # Display settings
 SCREEN_WIDTH = 1920
@@ -29,6 +29,7 @@ BALL_START_Y = 540
 
 # Initial ball velocity
 BALL_VELOCITY = 10
+BALL_START_DELAY = 30
 
 # Maximum possible velocity of the ball
 MAX_BALL_VELOCITY = 20
@@ -39,5 +40,6 @@ PADDLE_WIDTH = 10
 PADDLE_VELOCITY = 20
 
 # Audio settings
-MUSIC_VOLUME = 1.0 # value from 0.0 to 1.0
+MUSIC_VOLUME = 0.8 # value from 0.0 to 1.0
 MUSIC_CHOICE = None # set to True or False to select music choice
+I_WOULD_PREFER_TO_KEEP_MY_EARS_THANK_YOU_VERY_MUCH = False

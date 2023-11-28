@@ -1,4 +1,4 @@
-SETTINGS_VERSION = 4
+SETTINGS_VERSION = 5
 # Check and install required packages if not installed
 try:
     # Import necessary modules
@@ -73,6 +73,7 @@ class Ball:
         self.vel_y = vel_y
         self.collided = False
         self.disabled = False
+        self.time_until_move = BALL_START_DELAY
         self.update()
 
     def update(self):
@@ -165,6 +166,8 @@ song_list = [
 # Initialize variables for background music
 current_song_index = 0
 previous_song = None
+cached_music_volume = 0
+ears_protected = False
 
 # Define function to shuffle background music
 def shuffle_music():
@@ -192,13 +195,23 @@ MUSIC_END = pygame.USEREVENT + 1
 pygame.mixer.music.set_endevent(MUSIC_END)
 
 # Define function to play background music
-def play_background_music():
+def play_background_music(next_song):
+    global cached_music_volume, ears_protected, MUSIC_VOLUME
+    pygame.mixer.music.load(next_song)
+
+    if next_song.endswith("erika_ear_damage.mp3") and I_WOULD_PREFER_TO_KEEP_MY_EARS_THANK_YOU_VERY_MUCH:
+        cached_music_volume = MUSIC_VOLUME
+        ears_protected = True
+        MUSIC_VOLUME = 0.02
+    elif ears_protected:
+        ears_protected = False
+        MUSIC_VOLUME = cached_music_volume
+
     pygame.mixer.music.set_volume(MUSIC_VOLUME)
-    pygame.mixer.music.load(shuffle_music())
     pygame.mixer.music.play()
 
 if MUSIC_CHOICE == True:
-    play_background_music()
+    play_background_music(shuffle_music())
 
 elif MUSIC_CHOICE == False:
     pass
@@ -238,18 +251,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == MUSIC_END:
-            play_background_music()
+            play_background_music(shuffle_music())
 
         # Allow the user to navigate songs by using the ", and . keys (symbolised by the < and > for forwards and backwards)"
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_COMMA:  # Previous song
                 current_song_index = (current_song_index - 1) % len(song_list)
-                pygame.mixer.music.load(song_list[current_song_index])
-                pygame.mixer.music.play()
+                play_background_music(song_list[current_song_index])
             elif event.key == pygame.K_PERIOD:  # Next song
                 current_song_index = (current_song_index + 1) % len(song_list)
-                pygame.mixer.music.load(song_list[current_song_index])
-                pygame.mixer.music.play()
+                play_background_music(song_list[current_song_index])
 
     # Font Rendering
     if pygame.mixer.music.get_busy(): # check if music is currently playing
@@ -303,6 +314,12 @@ while running:
     for ball in balls:
         # Do not simulate if ball is disabled
         if ball.disabled:
+            continue
+        
+        # Wait until the ball is ready to move
+        if ball.time_until_move > 0:
+            ball.time_until_move -= 1
+            ball.update()
             continue
 
         # Paddle-ball collision detection
