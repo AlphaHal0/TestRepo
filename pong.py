@@ -1,6 +1,6 @@
 import os
 
-SETTINGS_VERSION = 1
+SETTINGS_VERSION = 2
 
 try:
     import pygame

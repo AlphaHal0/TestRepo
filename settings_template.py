@@ -4,7 +4,7 @@
 # Constants for game
 
 # Settings file version
-VERSION = 1
+VERSION = 2
 
 # Display settings
 SCREEN_WIDTH = 1920
@@ -37,3 +37,7 @@ MAX_BALL_VELOCITY = 50
 PADDLE_HEIGHT = 150
 PADDLE_WIDTH = 10
 PADDLE_VELOCITY = 15
+
+# Audio settings
+MUSIC_VOLUME = 1 # value from 0 to 1
+DEFAULT_CHOICE = None # set to True or False to automatically choose music option
