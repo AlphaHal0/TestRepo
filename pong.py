@@ -43,8 +43,6 @@ except (ImportError, NameError):
 if NUM_BALLS > MAX_BALL_STORAGE:
     raise ValueError("Ball count cannot be greater than the cleanup threshold")
 
-
-
 # Define colours
 BLACK = (0, 0, 0)
 GREY = (128, 128, 128)
@@ -107,17 +105,13 @@ paddle_a = Paddle(
     WHITE,
     SCREEN_WIDTH / 30,
     (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2),
-    PADDLE_HEIGHT,
-    PADDLE_WIDTH,
-    PADDLE_VELOCITY,
+    PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
 )
 paddle_b = Paddle(
     WHITE,
     (SCREEN_WIDTH / 30) * 29,
-    (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2),
-    PADDLE_HEIGHT,
-    PADDLE_WIDTH,
-    PADDLE_VELOCITY,
+    (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), 
+    PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY,
 )
 
 # Define function to spawn a ball
@@ -156,12 +150,10 @@ wall_bounce_sound = './assets/sound/bounce.mp3'
 paddle_bounce_sound = './assets/sound/paddle_bounce.mp3'
 
 # Define background music list
-song_list = [
-    './assets/sound/background_audio/deutschlandlied_kazoo.mp3',
-    './assets/sound/background_audio/erika_ear_damage.mp3',
-    './assets/sound/background_audio/soviet_kazoo.mp3',
-    './assets/sound/background_audio/titanic_flute.mp3'
-]
+MUSIC_PATH = './assets/sound/background_audio/'
+song_list = os.listdir(MUSIC_PATH)
+print('\n'.join(song_list))
+
 
 # Initialize variables for background music
 current_song_index = 0
@@ -197,7 +189,7 @@ pygame.mixer.music.set_endevent(MUSIC_END)
 # Define function to play background music
 def play_background_music(next_song):
     global cached_music_volume, ears_protected, MUSIC_VOLUME
-    pygame.mixer.music.load(next_song)
+    pygame.mixer.music.load(MUSIC_PATH+next_song)
 
     if next_song.endswith("erika_ear_damage.mp3") and I_WOULD_PREFER_TO_KEEP_MY_EARS_THANK_YOU_VERY_MUCH:
         cached_music_volume = MUSIC_VOLUME
@@ -207,6 +199,7 @@ def play_background_music(next_song):
         ears_protected = False
         MUSIC_VOLUME = cached_music_volume
 
+    print(f"Now playing: {next_song}")
     pygame.mixer.music.set_volume(MUSIC_VOLUME)
     pygame.mixer.music.play()
 

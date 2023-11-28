@@ -16,7 +16,7 @@ FONT_PATH = "assets/font/default.ttf"
 NUM_BALLS = 1
 
 # When to remove disabled balls in the array
-MAX_BALL_STORAGE = 1
+MAX_BALL_STORAGE = 16
 # Whether to continue (True) or end (False) the game once above value is met
 CONTINUE_ON_OVERFLOW = True
 
