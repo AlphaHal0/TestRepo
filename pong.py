@@ -1,4 +1,4 @@
-SETTINGS_VERSION = 3
+SETTINGS_VERSION = 4
 # Check and install required packages if not installed
 try:
     # Import necessary modules
@@ -47,6 +47,7 @@ if NUM_BALLS > MAX_BALL_STORAGE:
 
 # Define colours
 BLACK = (0, 0, 0)
+GREY = (128, 128, 128)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -119,9 +120,9 @@ paddle_b = Paddle(
 )
 
 # Define function to spawn a ball
-def spawn_ball(i,):
-    balls.append(Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, BALL_VELOCITY, BALL_VELOCITY))
-    print(f"Created ball at count {i} index {len(balls)}")
+def spawn_ball(i):
+    balls.append(Ball(WHITE, BALL_RADIUS, BALL_START_X, BALL_START_Y, clamp(BALL_VELOCITY+i, 0, MAX_BALL_VELOCITY) * (-1 if i%2 else 1), BALL_VELOCITY))
+    print(f"Created ball at count {i} index {len(balls)-1}")
 
 # Create balls
 ball_counter = 0
@@ -192,29 +193,39 @@ pygame.mixer.music.set_endevent(MUSIC_END)
 
 # Define function to play background music
 def play_background_music():
+    pygame.mixer.music.set_volume(MUSIC_VOLUME)
     pygame.mixer.music.load(shuffle_music())
     pygame.mixer.music.play()
 
-# Display audio popup
-screen.fill(BLACK)
-audio_popup_font = pygame.font.Font(None, 36)
-audio_popup = audio_popup_font.render("Do you want to play backing audio? [y/n]", True, WHITE)
-screen.blit(audio_popup, dest=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2 - 50))
-pygame.display.update()
+if MUSIC_CHOICE == True:
+    play_background_music()
 
-# Wait for user input to start or skip audio
-pygame.event.clear()
-i = 0
-while i < 1:
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_y:
-                play_background_music()
-                i += 1
-            elif event.key == pygame.K_n:
-                i += 1
-            else:
-                pass
+elif MUSIC_CHOICE == False:
+    pass
+
+else:
+    # Display audio popup
+    screen.fill(BLACK)
+    audio_popup_font = pygame.font.Font(FONT_PATH, 36)
+    audio_popup = audio_popup_font.render("Do you want to play backing audio? [y/n]", True, WHITE)
+    screen.blit(audio_popup, dest=(center_text(audio_popup.get_width(), SCREEN_WIDTH), SCREEN_HEIGHT // 2 - 50))
+    pygame.display.update()
+
+    # Wait for user input to start or skip audio
+    pygame.event.clear()
+    i = 0
+    while i < 1:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_y:
+                    play_background_music()
+                    i += 1
+                elif event.key == pygame.K_n:
+                    i += 1
+                else:
+                    pass
+
+font = pygame.font.Font(font_path, font_size)
 
 # Main game loop
 running = True
@@ -241,9 +252,11 @@ while running:
                 pygame.mixer.music.play()
 
     # Font Rendering
-    font = pygame.font.Font(font_path, font_size)
-    text_surface = font.render(f"{score_a} | {score_b}", True, WHITE)
-    screen.blit(text_surface, dest=(SCREEN_WIDTH / 2, 0))
+    if pygame.mixer.music.get_busy(): # check if music is currently playing
+        volume_display = font.render(f"{int(MUSIC_VOLUME*100)}%", True, GREY)
+        screen.blit(volume_display, dest=(SCREEN_WIDTH-volume_display.get_width(), 0))
+    score_display = font.render(f"{score_a} | {score_b}", True, WHITE)
+    screen.blit(score_display, dest=(center_text(score_display.get_width(), SCREEN_WIDTH), 0))
 
     # Optimize the ball array by removing ghost (disabled) balls
     if len(balls) > MAX_BALL_STORAGE:
@@ -267,6 +280,15 @@ while running:
     # Tell the paddles to process the key inputs
     paddle_a.move(keys[pygame.K_w], keys[pygame.K_s])
     paddle_b.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
+
+    # Change music volume
+    if keys[pygame.K_EQUALS] and MUSIC_VOLUME < 1:
+        MUSIC_VOLUME += 0.01
+        pygame.mixer.music.set_volume(MUSIC_VOLUME)
+    
+    if keys[pygame.K_MINUS] and MUSIC_VOLUME > 0:
+        MUSIC_VOLUME -= 0.01
+        pygame.mixer.music.set_volume(MUSIC_VOLUME)
 
     # Spawn a new ball when the space key is pressed
     if keys[pygame.K_SPACE]:

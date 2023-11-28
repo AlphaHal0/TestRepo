@@ -4,7 +4,7 @@
 # Constants for game
 
 # Settings file version
-VERSION = 3
+VERSION = 4
 
 # Display settings
 SCREEN_WIDTH = 1920
@@ -16,9 +16,9 @@ FONT_PATH = "assets/font/default.ttf"
 NUM_BALLS = 1
 
 # When to remove disabled balls in the array
-MAX_BALL_STORAGE = 20
+MAX_BALL_STORAGE = 1
 # Whether to continue (True) or end (False) the game once above value is met
-CONTINUE_ON_OVERFLOW = False
+CONTINUE_ON_OVERFLOW = True
 
 # Ball dimensions
 BALL_RADIUS = 8
@@ -31,9 +31,13 @@ BALL_START_Y = 540
 BALL_VELOCITY = 10
 
 # Maximum possible velocity of the ball
-MAX_BALL_VELOCITY = 50
+MAX_BALL_VELOCITY = 20
 
 # Paddle options
 PADDLE_HEIGHT = 150
 PADDLE_WIDTH = 10
 PADDLE_VELOCITY = 20
+
+# Audio settings
+MUSIC_VOLUME = 1.0 # value from 0.0 to 1.0
+MUSIC_CHOICE = None # set to True or False to select music choice
