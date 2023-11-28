@@ -28,11 +28,11 @@ BALL_START_X = 960
 BALL_START_Y = 540
 
 # Initial ball velocity
-BALL_VELOCITY = 10
+BALL_VELOCITY = 8
 BALL_START_DELAY = 30
 
 # Maximum possible velocity of the ball
-MAX_BALL_VELOCITY = 20
+MAX_BALL_VELOCITY = BALL_VELOCITY
 
 # Paddle options
 PADDLE_HEIGHT = 150
