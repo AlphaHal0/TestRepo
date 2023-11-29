@@ -1,2 +1,2 @@
-# AlphaBall
+# abcdefghijklmnopqrstuvwxyz
 Football game in python
