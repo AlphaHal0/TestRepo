@@ -162,5 +162,4 @@ cython_debug/
 .DS_Store
 
 # Game configuration
-settings.py
 scores.txt
