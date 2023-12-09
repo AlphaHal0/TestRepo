@@ -11,3 +11,13 @@ class Text:
 
     def display(self, x, y):
         self.screen.blit(self.surface, dest=(x, y))
+
+class Player:
+    def __init__(self, x, y, size, screen):
+        self.x = x
+        self.y = y
+        self.size = size
+    
+    def move(self, direction):
+        if direction == "up":
+            pass

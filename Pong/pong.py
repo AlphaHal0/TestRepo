@@ -1,5 +1,4 @@
 # Check and install required packages if not installed
-
 import os
 
 # Set current working directory to the location of this Python file
@@ -91,9 +90,9 @@ class Paddle:
 paddle_a = Paddle(WHITE, SCREEN_WIDTH / 30, (SCREEN_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_VELOCITY)
 if PRACTICE_MODE:
     paddle_b = Paddle(
-    GREY,
-    SCREEN_WIDTH - PADDLE_WIDTH*2,
-    0, SCREEN_HEIGHT, PADDLE_WIDTH*2, PADDLE_VELOCITY,
+        GREY,
+        SCREEN_WIDTH - PADDLE_WIDTH*2,
+        0, SCREEN_HEIGHT, PADDLE_WIDTH*2, PADDLE_VELOCITY,
     )
 else:
     paddle_b = Paddle(
