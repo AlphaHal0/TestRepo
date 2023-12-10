@@ -1,5 +1,2 @@
-# abcdefghijklmnopqrstuvwxyz
-Football game in python
-
-# SpaceDefenders
-Shootem up game in python
+# Game Repo:
+Simple games created by small group
