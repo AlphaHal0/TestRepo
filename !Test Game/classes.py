@@ -3,18 +3,17 @@ from settings import *
 from random import randint
 
 class Text:
-    def __init__(self, screen, font, text, colour=None, x=None, y=None, size=None):
-        if colour is None: colour = (255, 255, 255)
-        if x is None: x = 0
-        if y is None: y = 0
-        if size is None: size = 45
+    def __init__(self, screen, colour, size, font=None):
+        if font is None: font = pygame.font.Font(None, size)
 
+        self.colour = colour
+        self.size = size
+        self.font = font
         self.screen = screen
-        self.surface = font.render(text, True, colour, size)
-        self.display(x, y)
 
-    def display(self, x, y):
-        self.screen.blit(self.surface, dest=(x, y))
+    def display(self, text, x, y):
+        surface = self.font.render(text, True, self.colour, self.size)
+        self.screen.blit(surface, dest=(x, y))
 
 # Base class from which all entities are subclassed.
 class Entity:
@@ -71,10 +70,10 @@ class ObstacleHandler:
         self.GAPS_WIDTH = (int(width*0.1), int(width*0.2))
 
         # Bootstrap the obstacles array
-        self.generate_new_obstacles(-height*0.3)
-        self.generate_new_obstacles(-height*0.6)
-        self.generate_new_obstacles(-height*0.9)
-        self.generate_new_obstacles(-height*1.2)
+        self.generate_new_obstacles(-height*0.25)
+        self.generate_new_obstacles(-height*0.50)
+        self.generate_new_obstacles(-height*0.75)
+        self.generate_new_obstacles(-height*1)
 
     
     def move_obstacles(self):
@@ -140,5 +139,4 @@ class ObstacleHandler:
         # Add the obstacles to self.obstacles as Rect objects
         for block in blocks:
             self.obstacles.append(pygame.Rect(block[0], y, block[1]-block[0], self.obstacle_height))
-        
 
