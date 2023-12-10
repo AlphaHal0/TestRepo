@@ -235,7 +235,7 @@ while running:
             play_background_music(shuffle_music())
 
         # Allow the user to navigate songs by using the ", and . keys (symbolised by the < and > for forwards and backwards)"
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:  
             if event.key == pygame.K_COMMA:  # Previous song
                 current_song_index = (current_song_index - 1) % len(song_list)
                 play_background_music(song_list[current_song_index])

@@ -15,28 +15,52 @@ class Text:
     def display(self, x, y):
         self.screen.blit(self.surface, dest=(x, y))
 
-class Player:
+# Base class from which all entities are subclassed.
+class Entity:
     def __init__(self, x, y, width, height, screen):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.speed = 10
         self.screen = screen
     
-    def move(self, direction):
+    # Function to run collisions with borders of the screen
+    def border_collision_check(self):
+        # Get window dimensions
         width, height = self.screen.get_size()
-        if direction == "up":
-            self.y -= self.speed
-            if self.y-(self.height/2) < 0:
-                self.y = self.height/2
-        elif direction == "down":
-            self.y += self.speed
-            if self.y+(self.height/2) > height:
-                self.y = height-self.height/2
-                
+
+        # Run collision checks and adjust co-ordinates as necessary
+        if self.y < 0:
+            self.y = 0
+        elif self.y+self.height > height:
+            self.y = height-self.height
+        
+        if self.x < 0:
+            self.x = 0
+        elif self.x+self.width > width:
+            self.x = width-self.width
+    
+    def get_rect(self):
+        """
+        Function to return the entity as a pygame.Rect object.
+        """
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+    
+
+# Player class
+class Player(Entity):
+    def __init__(self, x, y, width, height, screen):
+        super().__init__(x, y, width, height, screen)
+        self.speed = 5
+    
+    # Function to handle player movement
+    def move(self, direction):
+        if direction == "up": self.y -= self.speed
+        if direction == "down": self.y += self.speed
+        if direction == "left": self.x -= self.speed
+        if direction == "right": self.x += self.speed
+
+    # Function to display player
     def display(self):
-        pygame.draw.rect(self.screen,(255, 0, 0), 
-                        [self.x+(self.width/2),
-                        self.y-(self.height/2), 
-                        self.width, self.height], 0)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.get_rect())
+
