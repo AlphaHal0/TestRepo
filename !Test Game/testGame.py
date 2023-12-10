@@ -1,6 +1,6 @@
 import pygame
 from settings import *
-from classes import Player
+from classes import Player, ObstacleHandler
 from functions import core_functions
 
 # Set fundamentals
@@ -11,7 +11,7 @@ font = pygame.font.Font(None, 256)
 
 # Declare game stuff
 player = Player(200, 200, 20, 20, screen)
-obstacles = [pygame.Rect(210, 210, 50, 50)]
+obstacle_handler = ObstacleHandler(screen)
 
 running = True
 while running:
@@ -33,12 +33,12 @@ while running:
         player.move("right")
     
     # Draw the obstacle
-    for rect in obstacles:
-        pygame.draw.rect(screen, (0, 255, 0), rect)
+    obstacle_handler.move_obstacles()
+    obstacle_handler.display_obstacles()
 
     # Check for collisions
-    if (index := pygame.Rect.collidelist(player.get_rect(), obstacles)) != -1:
-        pygame.draw.rect(screen, (255, 0, 0), obstacles[index])
+    if pygame.Rect.collidelist(player.rect, obstacle_handler.obstacles) != -1:
+        print("Collided") # Placeholder
     
     # Check for border collision and display the player
     player.border_collision_check()
